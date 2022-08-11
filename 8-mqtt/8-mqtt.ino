@@ -1,22 +1,54 @@
-//#include <ESP8266WiFi.h>
-//#include <PubSubClient.h>
+#include <ESP8266WiFi.h>
+#include <MQTT.h>
 #include </home/aubbiali/Arduino/embeddedExercise/WifiConfig.h>
 
-// MQTT Broker
-//const char *mqtt_broker = "broker.emqx.io";
-//const char *topic = "esp8266/test";
-//const char *mqtt_username = "emqx";
-//const char *mqtt_password = "public";
-//const int mqtt_port = 1883;
+WiFiClient net;
+MQTTClient client;
+unsigned long lastMillis = 0;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
-  
+  setupWifi();
+  setupMQTTBroker();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  delay(1000);
-  Serial.println(SSID);
+  client.loop();
+
+  if (!client.connected()) {
+    setupMQTTBroker();
+  }
+  
+  // publish a message roughly every second.
+  if (millis() - lastMillis > 1000) {
+    lastMillis = millis();
+    client.publish("/helloANDREAAA", "world");
+  }
+}
+
+void setupWifi(){
+  WiFi.begin(WIFINAME, WIFIPASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.println("Connecting to WiFi..");
+  }
+}
+
+void setupMQTTBroker() {
+  client.begin("test.mosquitto.org", net);
+  client.onMessage(callback);
+
+  Serial.print("\nconnecting MQTT");
+  while (!client.connect("arduino", "public", "public")) {
+    Serial.print(".");
+    delay(1000);
+  }
+
+  Serial.println("\nconnected to MQTT!");
+
+  client.subscribe("/helloANDREAAA");
+}
+
+void callback(String &topic, String &payload){
+  Serial.println("incoming: " + topic + " - " + payload);
 }
