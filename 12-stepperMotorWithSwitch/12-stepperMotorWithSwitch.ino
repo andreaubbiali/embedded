@@ -11,7 +11,7 @@ const int stepsPerRevolution = 2048;  // change this to fit the number of steps 
 
 int swithInput = D7;
 int startRotationInput = D3;
-bool isStarting, rotation;
+bool rotation, isLeftRotation;
 
 // AccelStepper::HALF4WIRE -> to indicate we’re controlling the stepper motor with four wires
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
@@ -20,19 +20,19 @@ void setup() {
   // initialize the serial port
   Serial.begin(115200);
 
-  isStarting = true;
   rotation = true;
 
   // set the speed and acceleration
-  stepper.setMaxSpeed(500);
-  stepper.setAcceleration(100);
+  stepper.setMaxSpeed(600);
+  stepper.setAcceleration(150);
 
   // set target position
   stepper.runToNewPosition(stepsPerRevolution);
+  isLeftRotation = false;
   
-  pinMode(swithInput, INPUT);
+  pinMode(swithInput, INPUT_PULLUP);
   pinMode(startRotationInput, INPUT);
-  attachInterrupt(digitalPinToInterrupt(swithInput), limitSwitch, FALLING);
+  attachInterrupt(digitalPinToInterrupt(swithInput), limitSwitch, RISING);
   attachInterrupt(digitalPinToInterrupt(startRotationInput), startRotation, FALLING);
 }
 
@@ -40,10 +40,15 @@ void loop() {
 
   if (rotation) {
     // check current stepper motor position to invert direction
-    if (stepper.distanceToGo() == 0){
-      stepper.moveTo(-stepper.currentPosition());
-      Serial.println("Changing direction");
+    // if (stepper.distanceToGo() == 0){
+    //   stepper.moveTo(-stepper.currentPosition());
+    //   Serial.println("Changing direction");
+    // }
+    if (stepper.distanceToGo() == 0) {
+      // isLeftRotation = !isLeftRotation;
+      stepper.moveTo(getDirection() * stepsPerRevolution);
     }
+
     // move the stepper motor (one step at a time)
     stepper.run();
   }
@@ -53,17 +58,30 @@ void loop() {
 
 ICACHE_RAM_ATTR void limitSwitch() {
   Serial.println("FINE CORSA CLICCATO");
+  
+  isLeftRotation = !isLeftRotation;
+  Serial.println(stepper.distanceToGo());
+  stepper.setCurrentPosition(0);
+  stepper.setMaxSpeed(600);
+  stepper.setAcceleration(150);
+  Serial.println(stepper.distanceToGo());
+  // delay(100);
 
-  if (isStarting) {
-    stepper.setCurrentPosition(0);
-    stepper.move(stepsPerRevolution);
-    isStarting = false;
-  }
   rotation = false;
+}
+
+int getDirection() {
+  if (isLeftRotation) {
+    return -1;
+  } else {
+    return 1;
+  }
 }
 
 ICACHE_RAM_ATTR void startRotation() {
   Serial.println("ENTRA start rotation");
+  
+  Serial.println(stepper.distanceToGo());
 
   rotation = true;
 }
