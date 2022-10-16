@@ -1,7 +1,7 @@
 
 #include <AccelStepper.h>
 
-const int stepsPerRevolution = 2048;  // change this to fit the number of steps per revolution
+const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
 
 // ULN2003 Motor Driver Pins
 #define IN1 5  //D1
@@ -46,7 +46,7 @@ void loop() {
     // }
     if (stepper.distanceToGo() == 0) {
       // isLeftRotation = !isLeftRotation;
-      stepper.moveTo(getDirection() * stepsPerRevolution);
+      stepper.move(getDirection() * stepsPerRevolution);      
     }
 
     // move the stepper motor (one step at a time)
@@ -60,12 +60,9 @@ ICACHE_RAM_ATTR void limitSwitch() {
   Serial.println("FINE CORSA CLICCATO");
   
   isLeftRotation = !isLeftRotation;
-  Serial.println(stepper.distanceToGo());
   stepper.setCurrentPosition(0);
   stepper.setMaxSpeed(600);
   stepper.setAcceleration(150);
-  Serial.println(stepper.distanceToGo());
-  // delay(100);
 
   rotation = false;
 }
@@ -81,8 +78,6 @@ int getDirection() {
 ICACHE_RAM_ATTR void startRotation() {
   Serial.println("ENTRA start rotation");
   
-  Serial.println(stepper.distanceToGo());
-
   rotation = true;
 }
 
