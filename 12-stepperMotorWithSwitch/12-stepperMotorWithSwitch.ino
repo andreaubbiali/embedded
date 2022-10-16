@@ -4,10 +4,10 @@
 const int stepsPerRevolution = 4096;  // change this to fit the number of steps per revolution
 
 // ULN2003 Motor Driver Pins
-#define IN1 5  //D1
-#define IN2 4  //D2
-#define IN3 14 //D5
-#define IN4 12 //D6
+#define IN1 D1
+#define IN2 D2
+#define IN3 D5
+#define IN4 D6
 
 int swithInput = D7;
 int startRotationInput = D3;
