@@ -32,7 +32,7 @@ void setup() {
   
   pinMode(swithInput, INPUT_PULLUP);
   pinMode(startRotationInput, INPUT);
-  attachInterrupt(digitalPinToInterrupt(swithInput), limitSwitch, RISING);
+  attachInterrupt(digitalPinToInterrupt(swithInput), limitSwitch, FALLING);
   attachInterrupt(digitalPinToInterrupt(startRotationInput), startRotation, FALLING);
 }
 
@@ -57,14 +57,18 @@ void loop() {
 }
 
 ICACHE_RAM_ATTR void limitSwitch() {
-  Serial.println("FINE CORSA CLICCATO");
   
-  isLeftRotation = !isLeftRotation;
-  stepper.setCurrentPosition(0);
-  stepper.setMaxSpeed(600);
-  stepper.setAcceleration(150);
+  if (rotation) {
+    Serial.println("FINE CORSA CLICCATO");
+    
+    isLeftRotation = !isLeftRotation;
+    stepper.setCurrentPosition(0);
+    stepper.setMaxSpeed(600);
+    stepper.setAcceleration(150);
 
-  rotation = false;
+    rotation = false;
+  }
+
 }
 
 int getDirection() {
