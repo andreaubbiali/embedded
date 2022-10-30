@@ -1,9 +1,9 @@
-int pinInput = D1;
+int pinInput = D2;
 int val = 0;
 void setup() {
   Serial.begin(115200);
-  pinMode(pinInput, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(pinInput), limitSwitch, RISING);
+  pinMode(pinInput, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pinInput), limitSwitch, FALLING);
 }
 
 void loop() {
@@ -11,10 +11,11 @@ void loop() {
   val = digitalRead(pinInput);
   Serial.println(val);
 
-  delay(5000);
+  delay(200);
 
 }
 
 ICACHE_RAM_ATTR void limitSwitch(){
   Serial.println("FINE CORSA CLICCATO");
 }
+
