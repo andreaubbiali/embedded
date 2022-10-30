@@ -13,8 +13,10 @@ void loop() {
   if (Serial.available() > 0) {
     String c = Serial.readString();
     if (c == "ACCENDI"){
+      Serial.println("ARRIVATO ACCENDI");
       digitalWrite(LED_BUILTIN, HIGH);
     } else if (c == "SPEGNI"){
+      Serial.println("ARRIVATO SPEGNI");
       digitalWrite(LED_BUILTIN, LOW);      
     }
   }
