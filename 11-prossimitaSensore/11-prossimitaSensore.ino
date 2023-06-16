@@ -1,5 +1,5 @@
-#define trigPin D2 //D2
-#define echoPin D5 //D1
+#define trigPin D6 //D2
+#define echoPin D1 //D1
 
 float duration, distance;
 
@@ -9,6 +9,8 @@ void setup() {
   pinMode(echoPin, INPUT);
 }
 void loop() {
+
+ 
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -18,11 +20,9 @@ void loop() {
   duration = pulseIn(echoPin, HIGH);
   distance = (duration / 2) * 0.0343;
 
-  // if (distance <= 400 && distance >=2) {
-    Serial.print("Distance = ");
-    Serial.print(distance);
-    Serial.println(" cm");
-  // }
+  if (distance > 1 && distance < 20) {
+      Serial.println(distance);
+  }
 
   delay(150);
 }
